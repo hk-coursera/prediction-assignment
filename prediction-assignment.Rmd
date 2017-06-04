@@ -1,0 +1,95 @@
+---
+title: "Prediction assignment"
+author: "Gennady Kalashnikov"
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+    number_sections: yes
+---
+
+# Summary
+This report describes creation of model that should be able to predict correctness of preformed exercise by data from accelerometers on the belt, forearm, arm, and dumbell.
+Dataset is taken from "Human Activity Recognition project" (http://groupware.les.inf.puc-rio.br/har).
+
+# Building model
+
+## Loading data
+
+```{r echo=FALSE}
+library(caret)
+library(ElemStatLearn)
+df_raw <- read.csv("pml-training.csv", na.strings=c("", "NA", "#DIV/0!"))
+```
+
+Original data provides a fairly large number of potential predictors `r ncol(df_raw)`, so at first the most valuable ones should be selected.
+
+Simplify analysis by removing columns that are more than 95% NA.
+```{r echo=FALSE}
+na_per_col <- sapply(df_raw, function(x){ sum(is.na(x)) })
+full_cols <- names(na_per_col[na_per_col < 0.95 * nrow(df)])
+df_full <- subset(df_raw, select = full_cols)
+```
+
+## Model selection
+
+Original study grouped measurements in time windows and analysed them, but here objective is to build a model that will predict class for individual measurements.
+So index, user_name, timestamp and window columns are removed.
+```{r echo=FALSE}
+data_cols <- names(df_full)[!names(df_full) %in% c("X", "user_name", "raw_timestamp_part_1", "raw_timestamp_part_2", "raw_timestamp_part_1", "cvtd_timestamp", "new_window", "num_window")]
+df <- subset(df_full, select = data_cols)
+```
+
+There are still too many columns in data (`ncol(df)`), so remove highly correlated ones.
+```{r echo=FALSE}
+cor_cols = findCorrelation(cor(df[,1:52]), cutoff = 0.7, names = TRUE)
+df_c <- subset(df, select = names(df)[!names(df) %in% cor_cols])
+```
+Columns left: `r ncol(df_c)`.
+
+## Training and cross validation
+Divide data into training, validation and test sets (in 60/20/20 proportion).
+
+```{r echo=FALSE}
+set.seed(523)
+inTrain = createDataPartition(df_c$classe, p = 0.6)[[1]]
+training = df_c[ inTrain,]
+inValidation = createDataPartition(df_c[ -inTrain,]$classe, p = 0.5)[[1]]
+validation = df_c[ -inTrain,][ inValidation,]
+testing = df_c[ -inTrain,][ -inValidation,]
+```
+
+Train one model using GBM (generalized boosted regression model) method and another one using random forest method.
+```{r echo=FALSE, cache=TRUE}
+set.seed(634)
+model_c_gbm <- train(classe ~ ., method="gbm", data = training, verbose = FALSE)
+set.seed(745)
+model_c_rf <- train(classe ~ ., method="rf", data = training)
+```
+
+These methods automatically tune some parameters and give accuracy evaluation.
+```{r echo=TRUE}
+print(model_c_gbm)
+print(model_c_rf)
+```
+
+Anyway compare their accuracy on validation set.
+```{r echo=FALSE, cache=TRUE}
+tncol = ncol(validation) - 1
+gbm_acc_v <- sum(predict(model_c_gbm, validation[,1:tncol]) == validation$classe) / nrow(validation)
+rf_acc_v <- sum(predict(model_c_rf, validation[,1:tncol]) == validation$classe) / nrow(validation)
+```
+
+Random forest accuracy (`r round(rf_acc_v,4)`) on validation set is significantly better than accuracy of GBM method (`r round(gbm_acc_v,4)`).
+High enough accuracy of random forest (together with the fact that classe is a discrete variable) make model ensembling unnecessary.
+It's also worth noting that automatic accurary evaluations of boosting with trees and random forest methods were very close to accuracy on validation set.
+
+Random forest model is selected as final model.
+
+## Expected out of sample error
+
+Expected out of sample error is calculated as error of selected model on testing dataset.
+```{r echo=FALSE}
+rf_acc_ev <- sum(predict(model_c_rf, testing[,1:tncol]) == testing$classe) / nrow(testing)
+```
+`r round(rf_acc_ev, 4)/100` %.
