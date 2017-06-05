@@ -61,9 +61,9 @@ Train one model using GBM (generalized boosted regression model) method and anot
 
 ```r
 set.seed(634)
-#model_c_gbm <- train(classe ~ ., method="gbm", data = training, verbose = FALSE)
+model_c_gbm <- train(classe ~ ., method="gbm", data = training, verbose = FALSE)
 set.seed(745)
-#model_c_rf <- train(classe ~ ., method="rf", data = training)
+model_c_rf <- train(classe ~ ., method="rf", data = training)
 ```
 
 These methods automatically tune some parameters and give accuracy evaluation.
@@ -144,9 +144,11 @@ Random forest model is selected as final model.
 
 ## Expected out of sample error
 
-Expected out of sample error is calculated as error of selected model on testing dataset.
+Calculate expected out of sample error as error of selected model on testing dataset.
 
 ```r
 rf_acc_ev <- sum(predict(model_c_rf, testing[,1:tncol]) == testing$classe) / nrow(testing)
 ```
-0.9432 %.
+Accuracy - 0.9906
+
+Error - 0.94%.

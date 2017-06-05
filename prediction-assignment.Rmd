@@ -88,8 +88,10 @@ Random forest model is selected as final model.
 
 ## Expected out of sample error
 
-Expected out of sample error is calculated as error of selected model on testing dataset.
-```{r echo=TRUE, results='hide'}
+Calculate expected out of sample error as error of selected model on testing dataset.
+```{r echo=TRUE}
 rf_acc_ev <- sum(predict(model_c_rf, testing[,1:tncol]) == testing$classe) / nrow(testing)
 ```
-`r round((1 - rf_acc_ev) * 100, 4)` %.
+Accuracy - `r round(rf_acc_ev, 4)`
+
+Error - `r round((1 - rf_acc_ev) * 100, 2)`%.

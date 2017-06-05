@@ -221,9 +221,10 @@ rf_acc_v &lt;- sum(predict(model_c_rf, validation[,1:tncol]) == validation$class
 </div>
 <div id="expected-out-of-sample-error" class="section level2">
 <h2><span class="header-section-number">2.4</span> Expected out of sample error</h2>
-<p>Expected out of sample error is calculated as error of selected model on testing dataset.</p>
+<p>Calculate expected out of sample error as error of selected model on testing dataset.</p>
 <pre class="r"><code>rf_acc_ev &lt;- sum(predict(model_c_rf, testing[,1:tncol]) == testing$classe) / nrow(testing)</code></pre>
-<p>0.9432 %.</p>
+<p>Accuracy - 0.9906</p>
+<p>Error - 0.94%.</p>
 </div>
 </div>
 
