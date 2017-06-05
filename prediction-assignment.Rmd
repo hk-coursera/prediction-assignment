@@ -62,9 +62,9 @@ testing = df_c[ -inTrain,][ -inValidation,]
 Train one model using GBM (generalized boosted regression model) method and another one using random forest method.
 ```{r echo=TRUE, results='hide', cache=TRUE}
 set.seed(634)
-#model_c_gbm <- train(classe ~ ., method="gbm", data = training, verbose = FALSE)
+model_c_gbm <- train(classe ~ ., method="gbm", data = training, verbose = FALSE)
 set.seed(745)
-#model_c_rf <- train(classe ~ ., method="rf", data = training)
+model_c_rf <- train(classe ~ ., method="rf", data = training)
 ```
 
 These methods automatically tune some parameters and give accuracy evaluation.
