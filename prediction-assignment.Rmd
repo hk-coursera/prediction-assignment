@@ -95,3 +95,12 @@ rf_acc_ev <- sum(predict(model_c_rf, testing[,1:tncol]) == testing$classe) / nro
 Accuracy - `r round(rf_acc_ev, 4)`
 
 Error - `r round((1 - rf_acc_ev) * 100, 2)`%.
+
+# Course Project Prediction Quiz
+```{r echo=TRUE, results='hide'}
+download.file('https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv', destfile = 'pml-testing.csv')
+df_raw_testing <- read.csv("pml-testing.csv", na.strings=c("", "NA", "#DIV/0!"))
+```
+```{r echo=TRUE}
+predict(model_c_rf, df_raw_testing)
+```

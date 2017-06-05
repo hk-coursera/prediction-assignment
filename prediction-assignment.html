@@ -227,6 +227,14 @@ rf_acc_v &lt;- sum(predict(model_c_rf, validation[,1:tncol]) == validation$class
 <p>Error - 0.94%.</p>
 </div>
 </div>
+<div id="course-project-prediction-quiz" class="section level1">
+<h1><span class="header-section-number">3</span> Course Project Prediction Quiz</h1>
+<pre class="r"><code>download.file('https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv', destfile = 'pml-testing.csv')
+df_raw_testing &lt;- read.csv(&quot;pml-testing.csv&quot;, na.strings=c(&quot;&quot;, &quot;NA&quot;, &quot;#DIV/0!&quot;))</code></pre>
+<pre class="r"><code>predict(model_c_rf, df_raw_testing)</code></pre>
+<pre><code>##  [1] B A B A A E D B A A B C B A E E A B B B
+## Levels: A B C D E</code></pre>
+</div>
 
 
 

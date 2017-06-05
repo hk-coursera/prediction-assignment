@@ -152,3 +152,19 @@ rf_acc_ev <- sum(predict(model_c_rf, testing[,1:tncol]) == testing$classe) / nro
 Accuracy - 0.9906
 
 Error - 0.94%.
+
+# Course Project Prediction Quiz
+
+```r
+download.file('https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv', destfile = 'pml-testing.csv')
+df_raw_testing <- read.csv("pml-testing.csv", na.strings=c("", "NA", "#DIV/0!"))
+```
+
+```r
+predict(model_c_rf, df_raw_testing)
+```
+
+```
+##  [1] B A B A A E D B A A B C B A E E A B B B
+## Levels: A B C D E
+```
